@@ -20,7 +20,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
   const { account } = useWeb3React()
   const { t } = useTranslation()
   const { toastError } = useToast()
-  const { library } = useWeb3Provider()
+  const { library, connector } = useWeb3Provider()
   const { theme } = useTheme()
   const {
     isLoading,
@@ -30,6 +30,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
     cakePoolBalance,
     poolsBalance,
     cakeBnbLpBalance,
+    ifoPoolBalance,
     verificationHash,
   } = useGetVotingPower(block, modalIsOpen)
 
@@ -63,7 +64,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
         },
       })
 
-      const sig = await signMessage(library, account, voteMsg)
+      const sig = await signMessage(connector, library, account, voteMsg)
       const msg: Message = { address: account, msg: voteMsg, sig }
 
       // Save proposal to snapshot
@@ -104,6 +105,7 @@ const CastVoteModal: React.FC<CastVoteModalProps> = ({ onSuccess, proposalId, vo
           <DetailsView
             total={total}
             cakeBalance={cakeBalance}
+            ifoPoolBalance={ifoPoolBalance}
             cakeVaultBalance={cakeVaultBalance}
             cakePoolBalance={cakePoolBalance}
             poolsBalance={poolsBalance}

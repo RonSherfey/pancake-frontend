@@ -1,7 +1,31 @@
-import { serializeTokens } from './tokens'
+import { VaultKey } from 'state/types'
+import tokens, { serializeTokens } from './tokens'
 import { SerializedPoolConfig, PoolCategory } from './types'
 
 const serializedTokens = serializeTokens()
+
+export const vaultPoolConfig = {
+  [VaultKey.CakeVault]: {
+    name: 'Auto CAKE',
+    description: 'Automatic restaking',
+    autoCompoundFrequency: 5000,
+    gasLimit: 380000,
+    tokenImage: {
+      primarySrc: `/images/tokens/${tokens.cake.address}.svg`,
+      secondarySrc: '/images/tokens/autorenew.svg',
+    },
+  },
+  [VaultKey.IfoPool]: {
+    name: 'IFO CAKE',
+    description: 'Stake CAKE to participate in IFOs',
+    autoCompoundFrequency: 1,
+    gasLimit: 500000,
+    tokenImage: {
+      primarySrc: `/images/tokens/${tokens.cake.address}.svg`,
+      secondarySrc: `/images/tokens/${tokens.cake.address}.svg`,
+    },
+  },
+} as const
 
 const pools: SerializedPoolConfig[] = [
   {
@@ -17,6 +41,149 @@ const pools: SerializedPoolConfig[] = [
     tokenPerBlock: '10',
     sortOrder: 1,
     isFinished: false,
+  },
+  {
+    sousId: 249,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.high,
+    contractAddress: {
+      97: '',
+      56: '0x2461ea28907A2028b2bCa40040396F64B4141004',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.02679',
+  },
+  {
+    sousId: 248,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.ccar,
+    contractAddress: {
+      97: '',
+      56: '0x9e31aef040941E67356519f44bcA07c5f82215e5',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.6093',
+  },
+  {
+    sousId: 247,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.dpt,
+    contractAddress: {
+      97: '',
+      56: '0x1c0C7F3B07a42efb4e15679a9ed7e70B2d7Cc157',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '4.62962963',
+  },
+  {
+    sousId: 246,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.thg,
+    contractAddress: {
+      97: '',
+      56: '0x56Bfb98EBEF4344dF2d88c6b80694Cba5EfC56c8',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.03761',
+  },
+  {
+    sousId: 245,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.idia,
+    contractAddress: {
+      97: '',
+      56: '0x07984aBb7489CD436d27875c07Eb532d4116795a',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.1262',
+  },
+  {
+    sousId: 244,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.xcv,
+    contractAddress: {
+      97: '',
+      56: '0xF1fA41f593547E406a203b681df18acCC3971A43',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.7413',
+  },
+  {
+    sousId: 243,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.nabox,
+    contractAddress: {
+      97: '',
+      56: '0x13A40BFab005D9284f8938FBb70Bf39982580e4D',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '1271',
+  },
+  {
+    sousId: 242,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.santos,
+    contractAddress: {
+      97: '',
+      56: '0x0914b2d9D4DD7043893DEF53ecFC0F1179F87d5c',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.0578',
+  },
+  {
+    sousId: 241,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.quidd,
+    contractAddress: {
+      97: '',
+      56: '0xd97ee2bfe79a4d4ab388553411c462fbb536a88c',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.07471',
+  },
+  {
+    sousId: 240,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.zoo,
+    contractAddress: {
+      97: '',
+      56: '0x2EfE8772EB97B74be742d578A654AB6C95bF18db',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.4516',
+  },
+  {
+    sousId: 239,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.sfund,
+    contractAddress: {
+      97: '',
+      56: '0x7F103689cabe17C2F70DA6faa298045d72a943b8',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.0311',
   },
   {
     sousId: 238,
@@ -82,19 +249,6 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '0.5233',
-  },
-  {
-    sousId: 233,
-    stakingToken: serializedTokens.cake,
-    earningToken: serializedTokens.eternal,
-    contractAddress: {
-      97: '',
-      56: '0xc28c400F2B675b25894FA632205ddec71E432288',
-    },
-    poolCategory: PoolCategory.CORE,
-    harvest: true,
-    sortOrder: 999,
-    tokenPerBlock: '0.002893',
   },
   {
     sousId: 232,
@@ -238,6 +392,19 @@ const pools: SerializedPoolConfig[] = [
     harvest: true,
     sortOrder: 999,
     tokenPerBlock: '1.7361',
+  },
+  {
+    sousId: 233,
+    stakingToken: serializedTokens.cake,
+    earningToken: serializedTokens.eternal,
+    contractAddress: {
+      97: '',
+      56: '0xc28c400F2B675b25894FA632205ddec71E432288',
+    },
+    poolCategory: PoolCategory.CORE,
+    harvest: true,
+    sortOrder: 999,
+    tokenPerBlock: '0.002893',
   },
   {
     sousId: 221,

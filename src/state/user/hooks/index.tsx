@@ -32,6 +32,9 @@ import {
   updateUserUsernameVisibility,
   updateUserExpertModeAcknowledgementShow,
   hidePhishingWarningBanner,
+  setIsExchangeChartDisplayed,
+  ChartViewMode,
+  setChartViewMode,
 } from '../actions'
 import { deserializeToken, GAS_PRICE_GWEI, serializeToken } from './helpers'
 
@@ -61,6 +64,40 @@ export function usePhishingBannerManager(): [boolean, () => void] {
   }, [dispatch])
 
   return [showPhishingWarningBanner, hideBanner]
+}
+
+// Get user preference for exchange price chart
+// For mobile layout chart is hidden by default
+export function useExchangeChartManager(isMobile: boolean): [boolean, (isDisplayed: boolean) => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const isChartDisplayed = useSelector<AppState, AppState['user']['isExchangeChartDisplayed']>(
+    (state) => state.user.isExchangeChartDisplayed,
+  )
+
+  const setUserChartPreference = useCallback(
+    (isDisplayed: boolean) => {
+      dispatch(setIsExchangeChartDisplayed(isDisplayed))
+    },
+    [dispatch],
+  )
+
+  return [isMobile ? false : isChartDisplayed, setUserChartPreference]
+}
+
+export function useExchangeChartViewManager() {
+  const dispatch = useDispatch<AppDispatch>()
+  const chartViewMode = useSelector<AppState, AppState['user']['userChartViewMode']>(
+    (state) => state.user.userChartViewMode,
+  )
+
+  const setUserChartViewPreference = useCallback(
+    (view: ChartViewMode) => {
+      dispatch(setChartViewMode(view))
+    },
+    [dispatch],
+  )
+
+  return [chartViewMode, setUserChartViewPreference] as const
 }
 
 export function useIsExpertMode(): boolean {

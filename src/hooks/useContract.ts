@@ -14,9 +14,11 @@ import {
   getSouschefContract,
   getClaimRefundContract,
   getTradingCompetitionContract,
+  getTradingCompetitionContractV2,
   getEasterNftContract,
   getErc721Contract,
   getCakeVaultContract,
+  getIfoPoolContract,
   getPredictionsContract,
   getChainlinkOracleContract,
   getSouschefV2Contract,
@@ -32,6 +34,7 @@ import {
   getErc721CollectionContract,
 } from 'utils/contractHelpers'
 import { getMulticallAddress } from 'utils/addressHelpers'
+import { VaultKey } from 'state/types'
 
 // Imports below migrated from Exchange useContract.ts
 import { Contract } from '@ethersproject/contracts'
@@ -43,7 +46,7 @@ import { ERC20_BYTES32_ABI } from '../config/abi/erc20'
 import ERC20_ABI from '../config/abi/erc20.json'
 import WETH_ABI from '../config/abi/weth.json'
 import multiCallAbi from '../config/abi/Multicall.json'
-import { getContract } from '../utils'
+import { getContract, getProviderOrSigner } from '../utils'
 
 /**
  * Helper hooks to get specific contracts (by ABI)
@@ -59,9 +62,12 @@ export const useIfoV2Contract = (address: string) => {
   return useMemo(() => getIfoV2Contract(address, library.getSigner()), [address, library])
 }
 
-export const useERC20 = (address: string) => {
-  const { library } = useActiveWeb3React()
-  return useMemo(() => getBep20Contract(address, library.getSigner()), [address, library])
+export const useERC20 = (address: string, withSignerIfPossible = true) => {
+  const { library, account } = useActiveWeb3React()
+  return useMemo(
+    () => getBep20Contract(address, withSignerIfPossible ? getProviderOrSigner(library, account) : null),
+    [account, address, library, withSignerIfPossible],
+  )
 }
 
 /**
@@ -132,14 +138,36 @@ export const useTradingCompetitionContract = () => {
   return useMemo(() => getTradingCompetitionContract(library.getSigner()), [library])
 }
 
+export const useTradingCompetitionContractV2 = (withSignerIfPossible = true) => {
+  const { library, account } = useActiveWeb3React()
+  return useMemo(
+    () => getTradingCompetitionContractV2(withSignerIfPossible ? getProviderOrSigner(library, account) : null),
+    [library, withSignerIfPossible, account],
+  )
+}
+
 export const useEasterNftContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getEasterNftContract(library.getSigner()), [library])
 }
 
+export const useVaultPoolContract = (vaultKey: VaultKey) => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => {
+    return vaultKey === VaultKey.CakeVault
+      ? getCakeVaultContract(library.getSigner())
+      : getIfoPoolContract(library.getSigner())
+  }, [library, vaultKey])
+}
+
 export const useCakeVaultContract = () => {
   const { library } = useActiveWeb3React()
   return useMemo(() => getCakeVaultContract(library.getSigner()), [library])
+}
+
+export const useIfoPoolContract = () => {
+  const { library } = useActiveWeb3React()
+  return useMemo(() => getIfoPoolContract(library.getSigner()), [library])
 }
 
 export const usePredictionsContract = () => {
@@ -203,11 +231,14 @@ export const useNftMarketContract = () => {
   return useMemo(() => getNftMarketContract(library.getSigner()), [library])
 }
 
-export const useErc721CollectionContract = (collectionAddress: string) => {
-  const { library } = useActiveWeb3React()
+export const useErc721CollectionContract = (collectionAddress: string, withSignerIfPossible = true) => {
+  const { library, account } = useActiveWeb3React()
   return useMemo(() => {
-    return getErc721CollectionContract(library.getSigner(), collectionAddress)
-  }, [library, collectionAddress])
+    return getErc721CollectionContract(
+      withSignerIfPossible ? getProviderOrSigner(library, account) : null,
+      collectionAddress,
+    )
+  }, [account, library, collectionAddress, withSignerIfPossible])
 }
 
 // Code below migrated from Exchange useContract.ts
@@ -219,7 +250,7 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
   return useMemo(() => {
     if (!address || !ABI || !library) return null
     try {
-      return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
+      return getContract(address, ABI, withSignerIfPossible ? getProviderOrSigner(library, account) : null)
     } catch (error) {
       console.error('Failed to get contract', error)
       return null

@@ -42,6 +42,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
     icon: 'Trophy',
     items: [
       {
+        label: t('Trading Competition'),
+        href: '/competition',
+      },
+      {
         label: t('Prediction (BETA)'),
         href: '/prediction',
       },
@@ -63,6 +67,10 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
       {
         label: t('Collections'),
         href: `${nftsBaseUrl}/collections`,
+      },
+      {
+        label: t('Activity'),
+        href: `${nftsBaseUrl}/activity`,
       },
     ],
   },

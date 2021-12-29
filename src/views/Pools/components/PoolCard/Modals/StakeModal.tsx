@@ -12,6 +12,7 @@ import {
   Link,
   CalculateIcon,
   IconButton,
+  Skeleton,
 } from '@pancakeswap/uikit'
 import { useTranslation } from 'contexts/Localization'
 import useTheme from 'hooks/useTheme'
@@ -21,6 +22,7 @@ import RoiCalculatorModal from 'components/RoiCalculatorModal'
 import { getFullDisplayBalance, formatNumber, getDecimalAmount } from 'utils/formatBalance'
 import { DeserializedPool } from 'state/types'
 import { getInterestBreakdown } from 'utils/compoundApyHelpers'
+import { logError } from 'utils/sentry'
 import PercentageButton from './PercentageButton'
 import useStakePool from '../../../hooks/useStakePool'
 import useUnstakePool from '../../../hooks/useUnstakePool'
@@ -154,6 +156,7 @@ const StakeModal: React.FC<StakeModalProps> = ({
       setPendingTx(false)
       onDismiss()
     } catch (e) {
+      logError(e)
       toastError(t('Error'), t('Please try again. Confirm the transaction and make sure you are paying enough gas!'))
       setPendingTx(false)
     }
@@ -247,12 +250,21 @@ const StakeModal: React.FC<StakeModalProps> = ({
           <Text mr="8px" color="textSubtle">
             {t('Annual ROI at current rates')}:
           </Text>
-          <AnnualRoiContainer alignItems="center" onClick={() => setShowRoiCalculator(true)}>
-            <AnnualRoiDisplay>${formattedAnnualRoi}</AnnualRoiDisplay>
-            <IconButton variant="text" scale="sm">
-              <CalculateIcon color="textSubtle" width="18px" />
-            </IconButton>
-          </AnnualRoiContainer>
+          {Number.isFinite(annualRoi) ? (
+            <AnnualRoiContainer
+              alignItems="center"
+              onClick={() => {
+                setShowRoiCalculator(true)
+              }}
+            >
+              <AnnualRoiDisplay>${formattedAnnualRoi}</AnnualRoiDisplay>
+              <IconButton variant="text" scale="sm">
+                <CalculateIcon color="textSubtle" width="18px" />
+              </IconButton>
+            </AnnualRoiContainer>
+          ) : (
+            <Skeleton width={60} />
+          )}
         </Flex>
       )}
       <Button

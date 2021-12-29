@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
 import { useWeb3React } from '@web3-react/core'
 import { Flex } from '@pancakeswap/uikit'
 import sum from 'lodash/sum'
@@ -16,11 +17,16 @@ import DetailsCard from '../shared/DetailsCard'
 import useGetCollectionDistribution from '../../../hooks/useGetCollectionDistribution'
 import OwnerCard from './OwnerCard'
 import MoreFromThisCollection from '../shared/MoreFromThisCollection'
+import ActivityCard from './ActivityCard'
 
 interface IndividualNFTPageProps {
   collectionAddress: string
   tokenId: string
 }
+
+const OwnerActivityContainer = styled(Flex)`
+  gap: 22px;
+`
 
 const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress, tokenId }) => {
   const [nft, setNft] = useState<NftToken>(null)
@@ -34,6 +40,7 @@ const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress
 
   useEffect(() => {
     const fetchNftData = async () => {
+      setIsOwnNft(false)
       const metadata = await getNftApi(collectionAddress, tokenId)
       const [marketData] = await getNftsMarketData({ collection: collectionAddress.toLowerCase(), tokenId }, 1)
       setNft({
@@ -47,7 +54,9 @@ const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress
         marketData,
       })
     }
-    if (userNftsInitializationState === UserNftInitializationState.INITIALIZED) {
+    if (!account) {
+      fetchNftData()
+    } else if (userNftsInitializationState === UserNftInitializationState.INITIALIZED) {
       const nftOwnedByConnectedUser = userNfts.find(
         (userNft) =>
           userNft.collectionAddress.toLowerCase() === collectionAddress.toLowerCase() && userNft.tokenId === tokenId,
@@ -57,14 +66,9 @@ const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress
         setNft(nftOwnedByConnectedUser)
         setIsOwnNft(true)
       } else {
-        // reset to defaults
-        setIsOwnNft(false)
         // Get metadata and market data separately if connected user is not the owner
         fetchNftData()
       }
-    }
-    if (!account) {
-      fetchNftData()
     }
   }, [userNfts, collectionAddress, tokenId, userNftsInitializationState, account])
 
@@ -112,7 +116,10 @@ const IndividualNFTPage: React.FC<IndividualNFTPageProps> = ({ collectionAddress
           <PropertiesCard properties={properties} rarity={getAttributesRarity()} />
           <DetailsCard contractAddress={collectionAddress} ipfsJson={nft?.marketData?.metadataUrl} />
         </Flex>
-        <OwnerCard nft={nft} isOwnNft={isOwnNft} nftIsProfilePic={nftIsProfilePic} />
+        <OwnerActivityContainer flexDirection="column" width="100%">
+          <OwnerCard nft={nft} isOwnNft={isOwnNft} nftIsProfilePic={nftIsProfilePic} />
+          <ActivityCard nft={nft} />
+        </OwnerActivityContainer>
       </TwoColumnsContainer>
       <MoreFromThisCollection collectionAddress={collectionAddress} currentTokenName={nft.name} />
     </Page>

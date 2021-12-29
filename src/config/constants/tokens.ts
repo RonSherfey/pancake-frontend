@@ -8,11 +8,9 @@ interface TokenList {
   [symbol: string]: Token
 }
 
-interface SerializedTokenList {
-  [symbol: string]: SerializedToken
-}
+const defineTokens = <T extends TokenList>(t: T) => t
 
-export const mainnetTokens = {
+export const mainnetTokens = defineTokens({
   wbnb: new Token(
     MAINNET,
     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -1766,9 +1764,131 @@ export const mainnetTokens = {
     'https://dragonkart.com/',
   ),
   qi: new Token(MAINNET, '0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5', 18, 'QI', 'BENQI', 'https://benqi.fi/'),
-}
+  sheesha: new Token(
+    MAINNET,
+    '0x232FB065D9d24c34708eeDbF03724f2e95ABE768',
+    18,
+    'SHEESHA',
+    'Sheesha Finance',
+    'https://www.sheeshafinance.io/',
+  ),
+  bcoin: new Token(
+    MAINNET,
+    '0x00e1656e45f18ec6747F5a8496Fd39B50b38396D',
+    18,
+    'BCOIN',
+    'Bomb Crypto',
+    'https://bombcrypto.io/',
+  ),
+  quidd: new Token(
+    MAINNET,
+    '0x7961Ade0a767c0E5B67Dd1a1F78ba44F727642Ed',
+    18,
+    'QUIDD',
+    'Quidd Token',
+    'https://www.quiddtoken.com/',
+  ),
+  santos: new Token(
+    MAINNET,
+    '0xA64455a4553C9034236734FadDAddbb64aCE4Cc7',
+    8,
+    'SANTOS',
+    'FC Santos Fan Token',
+    'https://launchpad.binance.com/en/launchpool/SANTOS_BNB',
+  ),
+  nabox: new Token(
+    MAINNET,
+    '0x755f34709E369D37C6Fa52808aE84A32007d1155',
+    18,
+    'NABOX',
+    'Nabox Token',
+    'https://nabox.io/',
+  ),
+  xcv: new Token(
+    MAINNET,
+    '0x4be63a9b26EE89b9a3a13fd0aA1D0b2427C135f8',
+    18,
+    'XCV',
+    'XCarnival',
+    'https://xcarnival.fi/',
+  ),
+  idia: new Token(
+    MAINNET,
+    '0x0b15Ddf19D47E6a86A56148fb4aFFFc6929BcB89',
+    18,
+    'IDIA',
+    'Impossible Decentralized Incubator Access Token',
+    'https://impossible.finance/',
+  ),
+  tt: new Token(
+    MAINNET,
+    '0x990E7154bB999FAa9b2fa5Ed29E822703311eA85',
+    18,
+    'TT',
+    'Thunder Token',
+    'https://www.thundercore.com/',
+  ),
+  gmee: new Token(
+    MAINNET,
+    '0x84e9a6F9D240FdD33801f7135908BfA16866939A',
+    18,
+    'GMEE',
+    'GAMEE',
+    'https://www.gamee.com/token',
+  ),
+  htd: new Token(MAINNET, '0x5E2689412Fae5c29BD575fbe1d5C1CD1e0622A8f', 18, 'HTD', 'HeroesTD', 'https://heroestd.io/'),
+  dpt: new Token(
+    MAINNET,
+    '0xE69cAef10A488D7AF31Da46c89154d025546e990',
+    18,
+    'DPT',
+    'Diviner Protocol',
+    'https://diviner.finance/',
+  ),
+  thg: new Token(
+    MAINNET,
+    '0x9fD87aEfe02441B123c3c32466cD9dB4c578618f',
+    18,
+    'THG',
+    'Thetan Gem',
+    'https://thetanarena.com/',
+  ),
+  ccar: new Token(
+    MAINNET,
+    '0x50332bdca94673F33401776365b66CC4e81aC81d',
+    18,
+    'CCAR',
+    'CryptoCars',
+    'https://cryptocars.me/',
+  ),
+  high: new Token(
+    MAINNET,
+    '0x5f4Bde007Dc06b867f86EBFE4802e34A1fFEEd63',
+    18,
+    'HIGH',
+    'Highstreet Token',
+    'https://highstreet.market/',
+  ),
+  sdao: new Token(
+    MAINNET,
+    '0x90Ed8F1dc86388f14b64ba8fb4bbd23099f18240',
+    18,
+    'SDAO',
+    'Singularity Dao',
+    'https://app.singularitydao.ai/',
+  ),
+  antex: new Token(MAINNET, '0xCA1aCAB14e85F30996aC83c64fF93Ded7586977C', 8, 'ANTEX', 'Antex', 'https://antex.org/'),
+  bbt: new Token(
+    MAINNET,
+    '0xD48474E7444727bF500a32D5AbE01943f3A59A64',
+    8,
+    'BBT',
+    'BitBook',
+    'https://www.bitbook.network/',
+  ),
+} as const)
 
-export const testnetTokens = {
+export const testnetTokens = defineTokens({
   wbnb: new Token(
     TESTNET,
     '0x094616F0BdFB0b526bD735Bf66Eca0Ad254ca81F',
@@ -1809,28 +1929,31 @@ export const testnetTokens = {
     'Bakeryswap Token',
     'https://www.bakeryswap.org/',
   ),
-}
+} as const)
 
-const tokens = (): TokenList => {
+const tokens = () => {
   const chainId = process.env.REACT_APP_CHAIN_ID
 
   // If testnet - return list comprised of testnetTokens wherever they exist, and mainnetTokens where they don't
   if (parseInt(chainId, 10) === ChainId.TESTNET) {
     return Object.keys(mainnetTokens).reduce((accum, key) => {
       return { ...accum, [key]: testnetTokens[key] || mainnetTokens[key] }
-    }, {})
+    }, {} as typeof testnetTokens & typeof mainnetTokens)
   }
 
   return mainnetTokens
 }
 
-export const serializeTokens = (): SerializedTokenList => {
-  const unserializedTokens = tokens()
+const unserializedTokens = tokens()
+
+type SerializedTokenList = Record<keyof typeof unserializedTokens, SerializedToken>
+
+export const serializeTokens = () => {
   const serializedTokens = Object.keys(unserializedTokens).reduce((accum, key) => {
     return { ...accum, [key]: serializeToken(unserializedTokens[key]) }
-  }, {})
+  }, {} as SerializedTokenList)
 
   return serializedTokens
 }
 
-export default tokens()
+export default unserializedTokens
